@@ -35,6 +35,8 @@
 #define TVOUT_VFRMT_PAL_N_720x480i		4
 #endif
 
+extern int ext_resolution;
+
 /* A lookup table for all the supported display modes by the HDMI
  * hardware and driver.  Use HDMI_SETUP_LUT in the module init to
  * setup the LUT with the supported modes. */
