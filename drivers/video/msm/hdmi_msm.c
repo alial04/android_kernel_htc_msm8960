@@ -4664,6 +4664,12 @@ void hdmi_hpd_feature(int enable)
 	}
 }
 
+static bool hdmi_msm_cable_connected(void)
+{
+	return hdmi_msm_state->hpd_initialized &&
+			external_common_state->hpd_state;
+}
+
 static int __devinit hdmi_msm_probe(struct platform_device *pdev)
 {
 	int rc;
@@ -4794,6 +4800,7 @@ static int __devinit hdmi_msm_probe(struct platform_device *pdev)
 
 	mfd = platform_get_drvdata(fb_dev);
 	mfd->update_panel_info = hdmi_msm_update_panel_info;
+	mfd->is_panel_ready = hdmi_msm_cable_connected;
 
 	if (hdmi_prim_display) {
 		rc = hdmi_msm_hpd_on();
