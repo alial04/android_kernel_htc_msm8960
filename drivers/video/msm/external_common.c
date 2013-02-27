@@ -207,10 +207,10 @@ static ssize_t hdmi_common_rda_edid_modes(struct device *dev,
 			.num_of_elements; ++i) {
 			if (ret > 0)
 				ret += snprintf(buf+ret, PAGE_SIZE-ret, ",%d",
-					*video_mode++ + 1);
+					*video_mode++);
 			else
 				ret += snprintf(buf+ret, PAGE_SIZE-ret, "%d",
-					*video_mode++ + 1);
+					*video_mode++);
 		}
 	} else
 		ret += snprintf(buf+ret, PAGE_SIZE-ret, "%d",
@@ -673,7 +673,7 @@ static ssize_t external_common_wta_video_mode(struct device *dev,
 	}
 	mutex_unlock(&external_common_state_hpd_mutex);
 
-	video_mode = atoi(buf)-1;
+	video_mode = atoi(buf);
 	DEV_INFO("%s: video_mode is %d\n", __func__, video_mode);
 	kobject_uevent(external_common_state->uevent_kobj, KOBJ_OFFLINE);
 #ifdef CONFIG_FB_MSM_HDMI_COMMON
@@ -1460,7 +1460,8 @@ static void add_supported_video_format(
 			hdmi_mhl_get_supported_mode(video_format);
 		mhl_supported = mhl_timing != NULL;
 		DEV_DBG("EDID: format: %d [%s], %s by MHL\n",
-			video_format, msm_hdmi_mode_2string(video_format),
+			video_format,
+			msm_hdmi_mode_2string(video_format),
 			mhl_supported ? "Supported" : "Not-Supported");
 	}
 
@@ -1469,8 +1470,8 @@ static void add_supported_video_format(
 			disp_mode_list->num_of_elements++] = video_format;
 		if (video_format == external_common_state->video_resolution) {
 			DEV_DBG("%s: Default resolution %d [%s] supported\n",
-				__func__, video_format,
-				msm_hdmi_mode_2string(video_format));
+					__func__, video_format,
+					msm_hdmi_mode_2string(video_format));
 		}
 	}
 }
@@ -1709,7 +1710,7 @@ static void hdmi_edid_get_display_mode(const uint8 *data_buf,
 			/* Subtract 1 because it is zero based in the driver,
 			 * while the Video identification code is 1 based in the
 			 * CEA_861D spec */
-			video_format = (*svd & 0x7F) - 1;
+			video_format = (*svd & 0x7F);
 			add_supported_video_format(disp_mode_list,
 				video_format);
 			/* Make a note of the preferred video format */
@@ -2069,10 +2070,10 @@ bool hdmi_common_get_video_format_from_drv_data(struct msm_fb_data_type *mfd)
 	userformat = var->reserved[3] >> 16;
 
 	if (userformat) {
-		format = userformat-1;
+		format = userformat;
 		DEV_DBG("reserved format is %d\n", format);
 	} else if (hdmi_prim_resolution) {
-		format = hdmi_prim_resolution - 1;
+		format = hdmi_prim_resolution;
 	} else {
 		DEV_DBG("detecting resolution from %dx%d use top 2 bytes of"
 			" var->reserved[3] to specify mode", mfd->var_xres,

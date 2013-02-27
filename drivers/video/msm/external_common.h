@@ -27,14 +27,7 @@
 #define DEV_WARN(args...)	dev_warn(external_common_state->dev, args)
 #define DEV_ERR(args...)	dev_err(external_common_state->dev, args)
 
-#ifdef CONFIG_FB_MSM_TVOUT
-#define TVOUT_VFRMT_NTSC_M_720x480i		0
-#define TVOUT_VFRMT_NTSC_J_720x480i		1
-#define TVOUT_VFRMT_PAL_BDGHIN_720x576i		2
-#define TVOUT_VFRMT_PAL_M_720x480i		3
-#define TVOUT_VFRMT_PAL_N_720x480i		4
-#endif
-
+#if defined(CONFIG_FB_MSM_HDMI_COMMON)
 extern int ext_resolution;
 
 /* A lookup table for all the supported display modes by the HDMI
@@ -55,6 +48,7 @@ struct hdmi_disp_mode_list_type {
 	uint32	disp_multi_3d_mode_list_cnt;
 	uint32	num_of_elements;
 };
+#endif
 
 /*
  * As per the CEA-861E spec, there can be a total of 10 short audio
