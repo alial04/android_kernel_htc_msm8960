@@ -34,11 +34,11 @@ module_param_named(keycaps, keycaps, charp, 0);
 
 static struct gpio_event_direct_entry fighter_keypad_map[] = {
 	{
-		.gpio = FIGHTER_VOL_DOWNz,
+		.gpio = FIGHTER_GPIO_VOL_DOWNz,
 		.code = KEY_VOLUMEDOWN,
 	},
 	{
-		.gpio = FIGHTER_VOL_UPz,
+		.gpio = FIGHTER_GPIO_VOL_UPz,
 		.code = KEY_VOLUMEUP,
 	},
 };

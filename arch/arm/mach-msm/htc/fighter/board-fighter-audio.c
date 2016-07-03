@@ -30,6 +30,7 @@
 #include "../sound/soc/msm/msm-pcm-routing.h"
 #include "../../../sound/soc/codecs/wcd9310.h"
 #include <linux/mfd/wcd9xxx/wcd9310_registers.h>
+#include "board-fighter.h"
 
 /* 8960 machine driver */
 
@@ -66,8 +67,8 @@
 #define JACK_DETECT_INT PM8921_GPIO_IRQ(PM8921_IRQ_BASE, JACK_DETECT_GPIO)
 #define JACK_US_EURO_SEL_GPIO 35
 
-static u32 top_spk_pamp_gpio  = PM8921_GPIO_PM_TO_SYS(19);
-static u32 bottom_spk_pamp_gpio = PM8921_GPIO_PM_TO_SYS(18);
+static u32 top_spk_pamp_gpio  = PM8921_GPIO_PM_TO_SYS(FIGHTER_PMGPIO_NC_19);
+static u32 bottom_spk_pamp_gpio = PM8921_GPIO_PM_TO_SYS(FIGHTER_PMGPIO_AUD_AMP_EN);
 static int msm_spk_control;
 static int msm_ext_bottom_spk_pamp;
 static int msm_ext_top_spk_pamp;
