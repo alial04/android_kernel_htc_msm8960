@@ -56,6 +56,7 @@ extern int msm_pm8921_regulator_pdata_len __devinitdata;
 #define GPIO_VREG_ID_EXT_5V		0
 #define GPIO_VREG_ID_EXT_L2		1
 #define GPIO_VREG_ID_EXT_3P3V		2
+#define GPIO_VREG_ID_EXT_OTG_SW		3
 
 /* EVM */
 #define FIGHTER_GPIO_LCD_TE			(0) /* MDP_VSYNC_GPIO */
