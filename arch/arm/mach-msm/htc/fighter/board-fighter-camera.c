@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2012, Code Aurora Forum. All rights reserved.
+/* Copyright (c) 2012, Code Aurora Forum. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -31,8 +31,6 @@
 
 #ifdef CONFIG_MSM_CAMERA
 #define MSM_8960_GSBI4_QUP_I2C_BUS_ID 4
-static int camera_sensor_power_enable(char *power, unsigned volt, struct regulator **sensor_power);
-static int camera_sensor_power_disable(struct regulator *sensor_power);
 
 static struct platform_device msm_camera_server = {
 	.name = "msm_cam_server",
@@ -41,33 +39,33 @@ static struct platform_device msm_camera_server = {
 
 static struct gpiomux_setting cam_settings[5] = {
 	{
-		.func = GPIOMUX_FUNC_GPIO, /*suspend*/
+		.func = GPIOMUX_FUNC_GPIO, /*suspend - I(L) 8MA*/
 		.drv = GPIOMUX_DRV_8MA,
 		.pull = GPIOMUX_PULL_DOWN,
 		.dir = GPIOMUX_IN,
 	},
 
 	{
-		.func = GPIOMUX_FUNC_1, /*active 1*/
+		.func = GPIOMUX_FUNC_1, /*active 1 - A FUNC1 8MA*/
 		.drv = GPIOMUX_DRV_8MA,
 		.pull = GPIOMUX_PULL_NONE,
 	},
 
 	{
-		.func = GPIOMUX_FUNC_GPIO, /*active 2*/
+		.func = GPIOMUX_FUNC_GPIO, /*active 2 - O(L) 8MA*/
 		.drv = GPIOMUX_DRV_8MA,
 		.pull = GPIOMUX_PULL_NONE,
 		.dir = GPIOMUX_OUT_LOW,
 	},
 
 	{
-		.func = GPIOMUX_FUNC_1, /*active 3*/
+		.func = GPIOMUX_FUNC_1, /*active 3 - A FUNC1 8MA*/
 		.drv = GPIOMUX_DRV_8MA,
 		.pull = GPIOMUX_PULL_NONE,
 	},
 
 	{
-		.func = GPIOMUX_FUNC_2, /*active 4*/
+		.func = GPIOMUX_FUNC_2, /*active 4 - A FUNC2 8MA*/
 		.drv = GPIOMUX_DRV_8MA,
 		.pull = GPIOMUX_PULL_NONE,
 	},
@@ -77,28 +75,28 @@ static struct msm_gpiomux_config fighter_cam_configs[] = {
 	{
 		.gpio = FIGHTER_GPIO_CAM_MCLK1,
 		.settings = {
-			[GPIOMUX_ACTIVE]    = &cam_settings[4],
-			[GPIOMUX_SUSPENDED] = &cam_settings[2],
+			[GPIOMUX_ACTIVE]    = &cam_settings[4], /*A FUNC2 8MA*/
+			[GPIOMUX_SUSPENDED] = &cam_settings[2], /*O(L) 8MA*/
 		},
 	},
 	{
 		.gpio = FIGHTER_GPIO_CAM_MCLK0,
 		.settings = {
-			[GPIOMUX_ACTIVE]    = &cam_settings[1],
-			[GPIOMUX_SUSPENDED] = &cam_settings[2],
+			[GPIOMUX_ACTIVE]    = &cam_settings[1], /*A FUNC1 8MA*/
+			[GPIOMUX_SUSPENDED] = &cam_settings[2], /*O(L) 8MA*/
 		},
 	},
 	{
 		.gpio = FIGHTER_GPIO_CAM_I2C_DAT,
 		.settings = {
-			[GPIOMUX_ACTIVE]    = &cam_settings[3],
+			[GPIOMUX_ACTIVE]    = &cam_settings[3], /*A FUNC1 8MA*/
 			[GPIOMUX_SUSPENDED] = &cam_settings[0],
 		},
 	},
 	{
 		.gpio = FIGHTER_GPIO_CAM_I2C_CLK,
 		.settings = {
-			[GPIOMUX_ACTIVE]    = &cam_settings[3],
+			[GPIOMUX_ACTIVE]    = &cam_settings[3], /*A FUNC1 8MA*/
 			[GPIOMUX_SUSPENDED] = &cam_settings[0],
 		},
 	},
@@ -269,11 +267,9 @@ struct msm_camera_device_platform_data msm_camera_csi_device_data[] = {
 };
 
 #ifdef CONFIG_MSM_CAMERA_FLASH
-#define LED_ON				1
-#define LED_OFF				0
-
 int fighter_flashlight_control(int mode)
 {
+	pr_debug("%s, linear led, mode=%d", __func__, mode);
 #ifdef CONFIG_FLASHLIGHT_TPS61310
 	return tps61310_flashlight_control(mode);
 #else
@@ -381,7 +377,7 @@ static int fighter_s5k3h2yx_vreg_on(void)
 	pr_info("[CAM] %s\n", __func__);
 
 	/* VCM */
-	rc = camera_sensor_power_enable("8921_l9", 2800000, &reg_8921_l9);
+	rc = camera_sensor_power_enable("8921_l9", 2850000, &reg_8921_l9); /* maxson should be 2800000 */
 	if (rc < 0) {
 		pr_err("[CAM] sensor_power_enable(\"8921_l9\", 2.8V) FAILED %d\n", rc);
 		goto enable_vcm_fail;
@@ -505,6 +501,15 @@ static struct msm_camera_sensor_platform_info sensor_s5k3h2yx_board_info = {
 };
 
 /* Andrew_Cheng linear led 20111205 MB */
+/*
+  150 mA FL_MODE_FLASH_LEVEL1
+  200 mA FL_MODE_FLASH_LEVEL2
+  300 mA FL_MODE_FLASH_LEVEL3
+  400 mA FL_MODE_FLASH_LEVEL4
+  500 mA FL_MODE_FLASH_LEVEL5
+  600 mA FL_MODE_FLASH_LEVEL6
+  700 mA FL_MODE_FLASH_LEVEL7
+*/
 static struct camera_led_est msm_camera_sensor_s5k3h2yx_led_table[] = {
 	{
 		.enable = 0,
@@ -518,7 +523,7 @@ static struct camera_led_est msm_camera_sensor_s5k3h2yx_led_table[] = {
 		.enable = 1,
 		.led_state = FL_MODE_FLASH_LEVEL2,
 		.current_ma = 200,
-		.lumen_value = 250,//245,//240,   //mk0118
+		.lumen_value = 250,
 		.min_step = 44,
 		.max_step = 52
 	},
@@ -566,7 +571,7 @@ static struct camera_led_est msm_camera_sensor_s5k3h2yx_led_table[] = {
 		.enable = 1,
 		.led_state = FL_MODE_FLASH,
 		.current_ma = 750,
-		.lumen_value = 750,//740,//725,   //mk0118
+		.lumen_value = 750,
 		.min_step = 0,
 		.max_step = 43
 	},
@@ -574,7 +579,7 @@ static struct camera_led_est msm_camera_sensor_s5k3h2yx_led_table[] = {
 		.enable = 2,
 		.led_state = FL_MODE_FLASH_LEVEL2,
 		.current_ma = 200,
-		.lumen_value = 250,//245,
+		.lumen_value = 250,
 		.min_step = 0,
 		.max_step = 270
 	},
@@ -598,7 +603,7 @@ static struct camera_led_est msm_camera_sensor_s5k3h2yx_led_table[] = {
 		.enable = 2,
 		.led_state = FL_MODE_FLASH,
 		.current_ma = 750,
-		.lumen_value = 750,//740,//725,
+		.lumen_value = 750,
 		.min_step = 271,
 		.max_step = 325
 	},
@@ -614,7 +619,7 @@ static struct camera_led_est msm_camera_sensor_s5k3h2yx_led_table[] = {
 		.enable = 3,
 		.led_state = FL_MODE_FLASH,
 		.current_ma = 750,
-		.lumen_value = 750,//740,//725,
+		.lumen_value = 750,
 		.min_step = 271,
 		.max_step = 325
 	},
@@ -667,7 +672,7 @@ static struct msm_camera_sensor_info msm_camera_sensor_s5k3h2yx_data = {
 #ifdef CONFIG_S5K3H2YX_ACT
 	.actuator_info = &s5k3h2yx_actuator_info,
 #endif
-	.use_rawchip = 0,
+	.use_rawchip = RAWCHIP_DISABLE,
 	.flash_cfg = &msm_camera_sensor_s5k3h2yx_flash_cfg, /* Andrew_Cheng linear led 20111205 */
 	.camera_type = BACK_CAMERA_2D,
 };
@@ -680,7 +685,6 @@ struct platform_device fighter_camera_sensor_s5k3h2yx = {
 };
 #endif /* CONFIG_S5K3H2YX */
 
-//HTC start Tom Lin 2011/12/19
 #ifdef CONFIG_IMX105
 static int fighter_imx105_vreg_on(void)
 {
@@ -688,7 +692,7 @@ static int fighter_imx105_vreg_on(void)
 	pr_info("%s\n", __func__);
 
 	/* VCM */
-	rc = camera_sensor_power_enable("8921_l9", 2800000, &reg_8921_l9);//based on 8921_l9 definition needs to be between 2.8 to 2.85v
+	rc = camera_sensor_power_enable("8921_l9", 2800000, &reg_8921_l9); /* based on 8921_l9 definition needs to be between 2.8 to 2.85v */
 	if (rc < 0) {
 		pr_err("sensor_power_enable(\"8921_l9\", 2.8V) FAILED %d\n", rc);
 		goto enable_vcm_fail;
@@ -698,11 +702,11 @@ static int fighter_imx105_vreg_on(void)
 
 
 	/* analog */
-	rc = camera_sensor_power_enable("8921_l8", 2800000, &reg_8921_l8);//based on 8921_l9 definition needs to be between 2.8 to 2.85v
+	rc = camera_sensor_power_enable("8921_l8", 2800000, &reg_8921_l8);/* based on 8921_l9 definition needs to be between 2.8 to 2.85v */
 	if (rc < 0) {
 		pr_err("sensor_power_enable(\"8921_l8\", 2.8V) FAILED %d\n", rc);
 		goto enable_analog_fail;
-	}	   
+	}
 
 	pr_info("imx105 A on\n");
 
@@ -719,8 +723,7 @@ static int fighter_imx105_vreg_on(void)
 			gpio_direction_output(FIGHTER_GPIO_CAM_EXT_LDO, 1);
 			gpio_free(FIGHTER_GPIO_CAM_EXT_LDO);
 		}
-	}
-	else{
+	} else {
 		pr_err("system_rev <2:vreg on");
 		rc = camera_sensor_power_enable("8921_l12", 1260000, &reg_8921_l12);/*Tom 20120224 increase to 1.26v for 876MHz*/
 	}
@@ -776,20 +779,19 @@ static int fighter_imx105_vreg_off(void)
 			gpio_direction_output(FIGHTER_GPIO_CAM_EXT_LDO, 0);
 			gpio_free(FIGHTER_GPIO_CAM_EXT_LDO);
 		}
-	}
-	else{
+	} else {
 		pr_err("system_rev <2:vreg off");
 		rc = camera_sensor_power_disable(reg_8921_l12);
 		pr_info("imx105 D off\n");
 	}
 	if (rc < 0)
-		pr_err("sensor_power_disable(\"8921_l12\") FAILED %d\n", rc);	
+		pr_err("sensor_power_disable(\"8921_l12\") FAILED %d\n", rc);
 
 	/* analog */
 	rc = camera_sensor_power_disable(reg_8921_l8);
 	pr_info("imx105 A off\n");
 	if (rc < 0)
-		pr_err("sensor_power_disable(\"8921_l8\") FAILED %d\n", rc);	
+		pr_err("sensor_power_disable(\"8921_l8\") FAILED %d\n", rc);
 
 	udelay(50);
 
@@ -817,7 +819,7 @@ static struct msm_actuator_info imx105_actuator_info = {
 
 static struct msm_camera_csi_lane_params imx105_csi_lane_params = {
 	.csi_lane_assign = 0xE4,
-	.csi_lane_mask = 0x1,
+	.csi_lane_mask = 0x3,
 };
 
 static struct msm_camera_sensor_platform_info sensor_imx105_board_info = {
@@ -830,6 +832,17 @@ static struct msm_camera_sensor_platform_info sensor_imx105_board_info = {
 	.vcm_enable	= 1,
 	.csi_lane_params = &imx105_csi_lane_params,
 };
+
+/* Andrew_Cheng linear led 20111205 MB */
+/*
+  150 mA FL_MODE_FLASH_LEVEL1
+  200 mA FL_MODE_FLASH_LEVEL2
+  300 mA FL_MODE_FLASH_LEVEL3
+  400 mA FL_MODE_FLASH_LEVEL4
+  500 mA FL_MODE_FLASH_LEVEL5
+  600 mA FL_MODE_FLASH_LEVEL6
+  700 mA FL_MODE_FLASH_LEVEL7
+*/
 
 /* Andrew_Cheng linear led 20111205 MB */
 static struct camera_led_est msm_camera_sensor_imx105_led_table[] = {
@@ -922,7 +935,7 @@ static struct msm_camera_sensor_info msm_camera_sensor_imx105_data = {
 #ifdef CONFIG_IMX105_ACT
 	.actuator_info		= &imx105_actuator_info,
 #endif
-	.use_rawchip		= 0,
+	.use_rawchip		= RAWCHIP_DISABLE,
 	.camera_type		= BACK_CAMERA_2D,
 	.flash_cfg		= &msm_camera_sensor_imx105_flash_cfg,
 	/* Andrew_Cheng linear led 20111205 */
@@ -935,7 +948,6 @@ struct platform_device fighter_camera_sensor_imx105 = {
 	},
 };
 #endif /* CONFIG_IMX105 */
-//HTC end Tom Lin 2011/12/19
 
 #ifdef CONFIG_MT9V113
 static int fighter_mt9v113_vreg_on(void)
@@ -1048,7 +1060,7 @@ static struct msm_camera_csi_lane_params mt9v113_csi_lane_params = {
 static struct msm_camera_sensor_platform_info sensor_mt9v113_board_info = {
 	.mount_angle = 270,
 	.mirror_flip = CAMERA_SENSOR_NONE,
-	.sensor_reset_enable = 1,
+	.sensor_reset_enable = 0,
 	.sensor_reset	= FIGHTER_GPIO_CAM2_RSTz,
 	.sensor_pwd	= FIGHTER_GPIO_CAM_PWDN,
 	.vcm_pwd	= 0,
@@ -1074,7 +1086,7 @@ static struct msm_camera_sensor_info msm_camera_sensor_mt9v113_data = {
 	.gpio_conf = &gpio_conf,
 	.csi_if	= 1,
 	.camera_type = FRONT_CAMERA_2D,
-	.use_rawchip = 0,
+	.use_rawchip = RAWCHIP_DISABLE,
 };
 
 struct platform_device fighter_camera_sensor_mt9v113 = {
@@ -1092,14 +1104,12 @@ struct i2c_board_info fighter_camera_i2c_boardinfo[] = {
 		.platform_data = &msm_camera_sensor_s5k3h2yx_data,
 	},
 #endif
-	//HTC start Tom Lin 2011/12/19
 #ifdef CONFIG_IMX105
 	{
 		I2C_BOARD_INFO("imx105", 0x1A),
 		.platform_data = &msm_camera_sensor_imx105_data,
 	},
 #endif
-	//HTC end Tom Lin 2011/12/19
 #ifdef CONFIG_MT9V113
 	{
 		I2C_BOARD_INFO("mt9v113", 0x3C),
