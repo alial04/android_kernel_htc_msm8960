@@ -2673,14 +2673,14 @@ static struct i2c_board_info cyttsp_info[] __initdata = {
 	},
 };
 
-static uint32_t gsbi2_gpio_table[] = {
-	GPIO_CFG(FIGHTER_GPIO_NFC_NC_12, 1, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
-	GPIO_CFG(FIGHTER_GPIO_NFC_NC_13, 1, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
-};
-
 static uint32_t gsbi3_gpio_table[] = {
 	GPIO_CFG(FIGHTER_GPIO_TP_I2C_SDA, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
 	GPIO_CFG(FIGHTER_GPIO_TP_I2C_SCL, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
+};
+
+static uint32_t gsbi3_gpio_table_gpio[] = {
+	GPIO_CFG(FIGHTER_GPIO_TP_I2C_SDA, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
+	GPIO_CFG(FIGHTER_GPIO_TP_I2C_SCL, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
 };
 
 /* CAMERA setting */
@@ -2689,9 +2689,19 @@ static uint32_t gsbi4_gpio_table[] = {
 	GPIO_CFG(FIGHTER_GPIO_CAM_I2C_SCL, 1, GPIO_CFG_OUTPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
 };
 
+static uint32_t gsbi4_gpio_table_gpio[] = {
+	GPIO_CFG(FIGHTER_GPIO_CAM_I2C_SDA, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
+	GPIO_CFG(FIGHTER_GPIO_CAM_I2C_SCL, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
+};
+
 static uint32_t gsbi8_gpio_table[] = {
 	GPIO_CFG(FIGHTER_GPIO_AC_I2C_SDA, 1, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
 	GPIO_CFG(FIGHTER_GPIO_AC_I2C_SCL, 1, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
+};
+
+static uint32_t gsbi8_gpio_table_gpio[] = {
+	GPIO_CFG(FIGHTER_GPIO_AC_I2C_SDA, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
+	GPIO_CFG(FIGHTER_GPIO_AC_I2C_SCL, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
 };
 
 static uint32_t gsbi12_gpio_table[] = {
@@ -2699,19 +2709,14 @@ static uint32_t gsbi12_gpio_table[] = {
 	GPIO_CFG(FIGHTER_GPIO_SENSOR_I2C_SCL, 1, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
 };
 
+static uint32_t gsbi12_gpio_table_gpio[] = {
+	GPIO_CFG(FIGHTER_GPIO_SENSOR_I2C_SDA, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
+	GPIO_CFG(FIGHTER_GPIO_SENSOR_I2C_SCL, 0, GPIO_CFG_INPUT, GPIO_CFG_NO_PULL, GPIO_CFG_8MA),
+};
+
 static void gsbi_qup_i2c_gpio_config(int adap_id, int config_type)
 {
 	printk(KERN_INFO "%s(): adap_id = %d, config_type = %d \n", __func__, adap_id, config_type);
-
-	if ((adap_id == MSM_8960_GSBI2_QUP_I2C_BUS_ID) && (config_type == 1)) {
-		gpio_tlmm_config(gsbi2_gpio_table[0], GPIO_CFG_ENABLE);
-		gpio_tlmm_config(gsbi2_gpio_table[1], GPIO_CFG_ENABLE);
-	}
-
-	if ((adap_id == MSM_8960_GSBI2_QUP_I2C_BUS_ID) && (config_type == 0)) {
-		gpio_tlmm_config(gsbi2_gpio_table[0], GPIO_CFG_DISABLE);
-		gpio_tlmm_config(gsbi2_gpio_table[1], GPIO_CFG_DISABLE);
-	}
 
 	if ((adap_id == MSM_8960_GSBI3_QUP_I2C_BUS_ID) && (config_type == 1)) {
 		gpio_tlmm_config(gsbi3_gpio_table[0], GPIO_CFG_ENABLE);
@@ -2719,8 +2724,8 @@ static void gsbi_qup_i2c_gpio_config(int adap_id, int config_type)
 	}
 
 	if ((adap_id == MSM_8960_GSBI3_QUP_I2C_BUS_ID) && (config_type == 0)) {
-		gpio_tlmm_config(gsbi3_gpio_table[0], GPIO_CFG_DISABLE);
-		gpio_tlmm_config(gsbi3_gpio_table[1], GPIO_CFG_DISABLE);
+		gpio_tlmm_config(gsbi3_gpio_table_gpio[0], GPIO_CFG_ENABLE);
+		gpio_tlmm_config(gsbi3_gpio_table_gpio[1], GPIO_CFG_ENABLE);
 	}
 
 	/* CAMERA setting */
@@ -2730,8 +2735,8 @@ static void gsbi_qup_i2c_gpio_config(int adap_id, int config_type)
 	}
 
 	if ((adap_id == MSM_8960_GSBI4_QUP_I2C_BUS_ID) && (config_type == 0)) {
-		gpio_tlmm_config(gsbi4_gpio_table[0], GPIO_CFG_DISABLE);
-		gpio_tlmm_config(gsbi4_gpio_table[1], GPIO_CFG_DISABLE);
+		gpio_tlmm_config(gsbi4_gpio_table_gpio[0], GPIO_CFG_ENABLE);
+		gpio_tlmm_config(gsbi4_gpio_table_gpio[1], GPIO_CFG_ENABLE);
 	}
 
 	if ((adap_id == MSM_8960_GSBI8_QUP_I2C_BUS_ID) && (config_type == 1)) {
@@ -2740,8 +2745,8 @@ static void gsbi_qup_i2c_gpio_config(int adap_id, int config_type)
 	}
 
 	if ((adap_id == MSM_8960_GSBI8_QUP_I2C_BUS_ID) && (config_type == 0)) {
-		gpio_tlmm_config(gsbi8_gpio_table[0], GPIO_CFG_DISABLE);
-		gpio_tlmm_config(gsbi8_gpio_table[1], GPIO_CFG_DISABLE);
+		gpio_tlmm_config(gsbi8_gpio_table_gpio[0], GPIO_CFG_ENABLE);
+		gpio_tlmm_config(gsbi8_gpio_table_gpio[1], GPIO_CFG_ENABLE);
 	}
 
 	if ((adap_id == MSM_8960_GSBI12_QUP_I2C_BUS_ID) && (config_type == 1)) {
@@ -2750,8 +2755,8 @@ static void gsbi_qup_i2c_gpio_config(int adap_id, int config_type)
 	}
 
 	if ((adap_id == MSM_8960_GSBI12_QUP_I2C_BUS_ID) && (config_type == 0)) {
-		gpio_tlmm_config(gsbi12_gpio_table[0], GPIO_CFG_DISABLE);
-		gpio_tlmm_config(gsbi12_gpio_table[1], GPIO_CFG_DISABLE);
+		gpio_tlmm_config(gsbi12_gpio_table_gpio[0], GPIO_CFG_ENABLE);
+		gpio_tlmm_config(gsbi12_gpio_table_gpio[1], GPIO_CFG_ENABLE);
 	}
 }
 
