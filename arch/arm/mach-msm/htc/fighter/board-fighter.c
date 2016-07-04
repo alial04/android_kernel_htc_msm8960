@@ -2457,7 +2457,7 @@ static struct platform_device android_usb_device = {
 #define HW_8960_V3_2_1   0x07
 void fighter_add_usb_devices(void)
 {
-	if (VERSION_ID == HW_8960_V3_2_1) {
+	if (VERSION_ID >= HW_8960_V3_2_1) {
 		printk(KERN_INFO "%s rev: %d v3.2.1\n", __func__, system_rev);
 		msm_otg_pdata.phy_init_seq = phy_init_seq_v3_2_1;
 	} else {
