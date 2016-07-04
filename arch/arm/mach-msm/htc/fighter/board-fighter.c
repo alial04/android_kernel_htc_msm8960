@@ -2245,9 +2245,6 @@ static struct cable_detect_platform_data cable_detect_pdata = {
 	.get_adc_cb		= fighter_get_usbid_adc,
 	.config_usb_id_gpios	= config_fighter_usb_id_gpios,
 	.usb_dpdn_switch	= fighter_usb_dpdn_switch,
-	.ad_en_active_state = 1,
-	.ad_en_gpio = PM8921_GPIO_PM_TO_SYS(FIGHTER_PMGPIO_NC_42),
-	.ad_en_irq = PM8921_GPIO_PM_TO_SYS(FIGHTER_PMGPIO_NC_42),
 };
 
 static struct platform_device cable_detect_device = {
@@ -2260,7 +2257,7 @@ static struct platform_device cable_detect_device = {
 
 static void fighter_cable_detect_register(void)
 {
-	pr_info("%s:\n", __func__);
+	pr_info("%s\n", __func__);
 	platform_device_register(&cable_detect_device);
 }
 
