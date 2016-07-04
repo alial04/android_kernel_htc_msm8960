@@ -124,7 +124,7 @@
 #include "linux/mfd/pm8xxx/pm8921-charger-htc.h"
 #endif
 
-extern unsigned int engineerid; // bit 0
+extern unsigned int engineerid;
 
 #define HW_VER_ID_VIRT		(MSM_TLMM_BASE + 0x00002054)
 
@@ -999,10 +999,10 @@ static struct resource resources_wcnss_wlan[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	{
-		.start  = 84,
-		.end    = 88,
-		.name   = "wcnss_gpios_5wire",
-		.flags  = IORESOURCE_IO,
+		.start	= 84,
+		.end	= 88,
+		.name	= "wcnss_gpios_5wire",
+		.flags	= IORESOURCE_IO,
 	},
 };
 
@@ -1932,7 +1932,6 @@ static ssize_t virtual_atmel_keys_show(struct kobject *kobj,
 		"\n");
 }
 
-
 static ssize_t virtual_syn_keys_show(struct kobject *kobj,
 		struct kobj_attribute *attr, char *buf)
 {
@@ -2006,7 +2005,6 @@ static struct i2c_board_info msm_i2c_gsbi12_info[] = {
 		.irq = MSM_GPIO_TO_INT(FIGHTER_GPIO_COMPASS_INT),
 	},
 };
-
 
 static DEFINE_MUTEX(capella_cm36282_lock);
 static struct regulator *PL_sensor_pwr;
@@ -2382,10 +2380,11 @@ static struct msm_otg_platform_data msm_otg_pdata = {
 	.mode			= USB_OTG,
 	.otg_control		= OTG_PMIC_CONTROL,
 	.phy_type		= SNPS_28NM_INTEGRATED_PHY,
-//	.pmic_id_irq		= PM8921_USB_ID_IN_IRQ(PM8921_IRQ_BASE),
+#if 0
+	.pmic_id_irq		= PM8921_USB_ID_IN_IRQ(PM8921_IRQ_BASE),
+#endif
 	.vbus_power		= msm_hsusb_vbus_power,
 	.power_budget		= 750,
-//	.ldo_power_collapse	= true,
 };
 #endif
 
@@ -2918,7 +2917,9 @@ static struct msm_thermal_data msm_thermal_pdata = {
 	.poll_ms = 1000,
 	.limit_temp_degC = 60,
 	.temp_hysteresis_degC = 10,
-//	.limit_freq = 918000,
+#if 0
+	.limit_freq = 918000,
+#endif
 	.freq_step = 2,
 };
 
@@ -3128,21 +3129,25 @@ static void __init msm8960_gfx_init(void)
 
 #ifdef CONFIG_HTC_BATT_8960
 static struct pm8921_charger_batt_param chg_batt_params[] = {
+	/* for normal type battery */
 	[0] = {
 		.max_voltage = 4200,
 		.cool_bat_voltage = 4200,
 		.warm_bat_voltage = 4000,
 	},
+	/* for HV type battery */
 	[1] = {
 		.max_voltage = 4340,
 		.cool_bat_voltage = 4340,
 		.warm_bat_voltage = 4000,
 	},
+	/* for another HV type battery */
 	[2] = {
 		.max_voltage = 4300,
 		.cool_bat_voltage = 4300,
 		.warm_bat_voltage = 4000,
 	},
+	/* for HV type battery for SMB charger IC */
 	[3] = {
 		.max_voltage = 4350,
 		.cool_bat_voltage = 4350,
@@ -3151,20 +3156,21 @@ static struct pm8921_charger_batt_param chg_batt_params[] = {
 };
 
 static struct single_row_lut fcc_temp_id_1 = {
-	.x		= {-20, -10, 0, 5, 10, 20, 30, 40},
-	.y		= {900, 1050, 1350, 1450, 1520, 1600, 1620, 1630},
-	.cols	= 8
+	.x	= {-20, -10, 0, 5, 10, 20, 30, 40},
+	.y	= {900, 1050, 1350, 1450, 1520, 1600, 1620, 1630},
+	.cols	= 8,
 };
 
 static struct single_row_lut fcc_sf_id_1 = {
-	.x		= {100, 200, 300, 400, 500},
-	.y		= {100, 100, 100, 100, 100},
-	.cols	= 5
+	.x	= {100, 200, 300, 400, 500},
+	.y	= {100, 100, 100, 100, 100},
+	.cols	= 5,
 };
 
 static struct sf_lut pc_sf_id_1 = {
 	.rows		= 10,
 	.cols		= 5,
+	/* row_entries are cycle */
 	.row_entries	= {100, 200, 300, 400, 500},
 	.percent	= {100, 90, 80, 70, 60, 50, 40, 30, 20, 10},
 	.sf		= {
@@ -3184,7 +3190,7 @@ static struct sf_lut pc_sf_id_1 = {
 static struct pc_temp_ocv_lut pc_temp_ocv_id_1 = {
 	.rows		= 29,
 	.cols		= 8,
-	.temp		= {-20, -10, 0, 5, 10, 20, 30, 40},
+	.temp		= {-20, -10,  0, 5, 10, 20, 30, 40},
 	.percent	= {100, 95, 90, 85, 80, 75, 70, 65, 60, 55,
 				50, 45, 40, 35, 30, 25, 20, 15, 10, 9,
 				8, 7, 6, 5, 4, 3, 2, 1, 0
@@ -3219,7 +3225,7 @@ static struct pc_temp_ocv_lut pc_temp_ocv_id_1 = {
 			{3676, 3676, 3676, 3676, 3644, 3534, 3516, 3505},
 			{3670, 3670, 3670, 3670, 3633, 3497, 3478, 3468},
 			{3663, 3663, 3663, 3663, 3622, 3460, 3440, 3430}
-	}
+	},
 };
 
 struct pm8921_bms_battery_data bms_battery_data_id_1 = {
@@ -3227,24 +3233,25 @@ struct pm8921_bms_battery_data bms_battery_data_id_1 = {
 	.fcc_temp_lut		= &fcc_temp_id_1,
 	.fcc_sf_lut		= &fcc_sf_id_1,
 	.pc_temp_ocv_lut	= &pc_temp_ocv_id_1,
-	.pc_sf_lut		= &pc_sf_id_1
+	.pc_sf_lut		= &pc_sf_id_1,
 };
 
 static struct single_row_lut fcc_temp_id_2 = {
-	.x		= {-20, -10, 0, 5, 10, 20, 30, 40},
-	.y		= {900, 1050, 1360, 1540, 1500, 1600, 1620, 1630},
-	.cols	= 8
+	.x	= {-20, -10, 0, 5, 10, 20, 30, 40},
+	.y	= {900, 1050, 1360, 1540, 1500, 1600, 1620, 1630},
+	.cols	= 8,
 };
 
 static struct single_row_lut fcc_sf_id_2 = {
-	.x		= {100, 200, 300, 400, 500},
-	.y		= {100, 100, 100, 100, 100},
-	.cols	= 5
+	.x	= {100, 200, 300, 400, 500},
+	.y	= {100, 100, 100, 100, 100},
+	.cols	= 5,
 };
 
 static struct sf_lut pc_sf_id_2 = {
 	.rows		= 10,
 	.cols		= 5,
+	/* row_entries are cycle */
 	.row_entries	= {100, 200, 300, 400, 500},
 	.percent	= {100, 90, 80, 70, 60, 50, 40, 30, 20, 10},
 	.sf		= {
@@ -3299,7 +3306,7 @@ static struct pc_temp_ocv_lut pc_temp_ocv_id_2 = {
 			{3649, 3649, 3649, 3649, 3579, 3460, 3438, 3439},
 			{3635, 3635, 3635, 3635, 3549, 3419, 3398, 3400},
 			{3621, 3621, 3621, 3621, 3519, 3378, 3358, 3360}
-	}
+	},
 };
 
 struct pm8921_bms_battery_data bms_battery_data_id_2 = {
@@ -3307,24 +3314,25 @@ struct pm8921_bms_battery_data bms_battery_data_id_2 = {
 	.fcc_temp_lut		= &fcc_temp_id_2,
 	.fcc_sf_lut		= &fcc_sf_id_2,
 	.pc_temp_ocv_lut	= &pc_temp_ocv_id_2,
-	.pc_sf_lut		= &pc_sf_id_2
+	.pc_sf_lut		= &pc_sf_id_2,
 };
 
 static struct single_row_lut fcc_temp_id_3 = {
-	.x		= {-20, -10, 0, 5, 10, 20, 30, 40},
-	.y		= {1450, 1750, 1890, 2000, 2080, 2150, 2150, 2150},
-	.cols	= 8
+	.x	= {-20, -10, 0, 5, 10, 20, 30, 40},
+	.y	= {1450, 1750, 1890, 2000, 2080, 2150, 2150, 2150},
+	.cols	= 8,
 };
 
 static struct single_row_lut fcc_sf_id_3 = {
-	.x		= {100, 200, 300, 400, 500},
-	.y		= {100, 97, 93, 92, 90},
-	.cols	= 5
+	.x	= {100, 200, 300, 400, 500},
+	.y	= {100, 97, 93, 92, 90},
+	.cols	= 5,
 };
 
 static struct sf_lut pc_sf_id_3 = {
 	.rows		= 10,
 	.cols		= 5,
+	/* row_entries are cycle */
 	.row_entries	= {100, 200, 300, 400, 500},
 	.percent	= {100, 90, 80, 70, 60, 50, 40, 30, 20, 10},
 	.sf		= {
@@ -3379,7 +3387,7 @@ static struct pc_temp_ocv_lut pc_temp_ocv_id_3 = {
 			{3706, 3706, 3706, 3706, 3694, 3588, 3546, 3524},
 			{3703, 3703, 3703, 3703, 3692, 3555, 3502, 3474},
 			{3699, 3699, 3699, 3699, 3690, 3521, 3457, 3423}
-	}
+	},
 };
 
 struct pm8921_bms_battery_data bms_battery_data_id_3 = {
@@ -3387,7 +3395,7 @@ struct pm8921_bms_battery_data bms_battery_data_id_3 = {
 	.fcc_temp_lut		= &fcc_temp_id_3,
 	.fcc_sf_lut		= &fcc_sf_id_3,
 	.pc_temp_ocv_lut	= &pc_temp_ocv_id_3,
-	.pc_sf_lut		= &pc_sf_id_3
+	.pc_sf_lut		= &pc_sf_id_3,
 };
 
 static struct htc_battery_cell htc_battery_cells[] = {
@@ -3506,7 +3514,6 @@ static struct msm_rpmrs_level msm_rpmrs_levels[] = {
 		20000, 2, 5752000, 32000,
 	},
 };
-
 
 static struct msm_rpmrs_platform_data msm_rpmrs_data __initdata = {
 	.levels = &msm_rpmrs_levels[0],
@@ -3635,12 +3642,11 @@ static void __init register_i2c_devices(void)
 	for (i = 0; i < ARRAY_SIZE(msm8960_i2c_devices); ++i) {
 		if (msm8960_i2c_devices[i].machs & mach_mask) {
 			i2c_register_board_info(msm8960_i2c_devices[i].bus,
-					msm8960_i2c_devices[i].info,
-					msm8960_i2c_devices[i].len);
+						msm8960_i2c_devices[i].info,
+						msm8960_i2c_devices[i].len);
 		}
 	}
 #ifdef CONFIG_MSM_CAMERA
-	/* HTC_START_Simon.Ti_Liu_20120711_IMPLEMENT_MCLK_SWITCH */
 	if (fighter_camera_i2c_devices.machs & mach_mask)
 		i2c_register_board_info(fighter_camera_i2c_devices.bus,
 				fighter_camera_i2c_devices.info,
@@ -3805,9 +3811,6 @@ static void __init fighter_init(void)
 	slim_register_board_info(msm_slim_devices,
 		ARRAY_SIZE(msm_slim_devices));
 	BUG_ON(msm_pm_boot_init(&msm_pm_boot_pdata));
-
-//	create_proc_read_entry("emmc", 0, NULL, emmc_partition_read_proc, NULL);
-//	create_proc_read_entry("dying_processes", 0, NULL, dying_processors_read_proc, NULL);
 
 	/*usb driver won't be loaded in MFG 58 station and gift mode*/
 	if (!(board_mfg_mode() == 6 || board_mfg_mode() == 7))
