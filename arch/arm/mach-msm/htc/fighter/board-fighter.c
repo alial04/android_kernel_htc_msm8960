@@ -124,10 +124,6 @@
 #include "linux/mfd/pm8xxx/pm8921-charger-htc.h"
 #endif
 
-#ifdef CONFIG_PERFLOCK
-#include <mach/perflock.h>
-#endif
-
 extern unsigned int engineerid; // bit 0
 
 #define HW_VER_ID_VIRT		(MSM_TLMM_BASE + 0x00002054)
@@ -2513,45 +2509,6 @@ static struct msm_spm_platform_data msm_spm_l2_data[] __initdata = {
 	},
 };
 
-#ifdef CONFIG_PERFLOCK
-static unsigned fighter_perf_acpu_table[] = {
-	810000000, /* LOWEST */
-	918000000, /* LOW */
-	1026000000, /* MEDIUM */
-	1242000000,/* HIGH */
-	1512000000, /* HIGHEST */
-};
-
-static unsigned fighter_cpufreq_ceiling_acpu_table[] = {
-	702000000,
-	918000000,
-	1026000000,
-};
-
-static struct perflock_data fighter_perflock_data = {
-	.perf_acpu_table = fighter_perf_acpu_table,
-	.table_size = ARRAY_SIZE(fighter_perf_acpu_table),
-};
-
-static struct perflock_data fighter_cpufreq_ceiling_data = {
-	.perf_acpu_table = fighter_cpufreq_ceiling_acpu_table,
-	.table_size = ARRAY_SIZE(fighter_cpufreq_ceiling_acpu_table),
-};
-
-static struct perflock_pdata perflock_pdata = {
-	.perf_floor = &fighter_perflock_data,
-	.perf_ceiling = &fighter_cpufreq_ceiling_data,
-};
-
-struct platform_device msm8960_device_perf_lock = {
-	.name = "perf_lock",
-	.id = -1,
-	.dev = {
-		.platform_data = &perflock_pdata,
-	},
-};
-#endif
-
 #define CYTTSP_TS_GPIO_IRQ		11
 #define CYTTSP_TS_SLEEP_GPIO		50
 #define CYTTSP_TS_RESOUT_N_GPIO		52
@@ -2975,9 +2932,6 @@ static struct platform_device *fighter_devices[] __initdata = {
 	&msm_bus_sys_fpb,
 	&msm_bus_cpss_fpb,
 	&msm_device_tz_log,
-#ifdef CONFIG_PERFLOCK
-	&msm8960_device_perf_lock,
-#endif
 	&scm_memchk_device,
 };
 
