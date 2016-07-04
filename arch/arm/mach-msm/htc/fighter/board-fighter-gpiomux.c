@@ -14,33 +14,13 @@
 #include <mach/gpiomux.h>
 #include "board-fighter.h"
 
-static struct gpiomux_setting gsbi2 = {
+static struct gpiomux_setting gpio_i2c_config = {
 	.func = GPIOMUX_FUNC_1,
 	.drv = GPIOMUX_DRV_8MA,
 	.pull = GPIOMUX_PULL_NONE,
 };
 
-static struct gpiomux_setting gsbi3 = {
-	.func = GPIOMUX_FUNC_1,
-	.drv = GPIOMUX_DRV_8MA,
-	.pull = GPIOMUX_PULL_NONE,
-};
-
-#if 0	/* active in cam_settings */
-static struct gpiomux_setting gsbi4 = {
-	.func = GPIOMUX_FUNC_1,
-	.drv = GPIOMUX_DRV_8MA,
-	.pull = GPIOMUX_PULL_NONE,
-};
-#endif
-
-static struct gpiomux_setting gsbi8 = {
-	.func = GPIOMUX_FUNC_1,
-	.drv = GPIOMUX_DRV_8MA,
-	.pull = GPIOMUX_PULL_NONE,
-};
-
-static struct gpiomux_setting gsbi12 = {
+static struct gpiomux_setting gpio_i2c_config_sus = {
 	.func = GPIOMUX_FUNC_1,
 	.drv = GPIOMUX_DRV_8MA,
 	.pull = GPIOMUX_PULL_NONE,
@@ -48,51 +28,45 @@ static struct gpiomux_setting gsbi12 = {
 
 static struct msm_gpiomux_config fighter_gsbi_configs[] __initdata = {
 	{
-		.gpio      = FIGHTER_GPIO_NFC_NC_12,	/* GSBI2 I2C QUP SDA */
-		.settings = {
-			[GPIOMUX_SUSPENDED] = &gsbi2,
-		},
-	},
-	{
-		.gpio      = FIGHTER_GPIO_NFC_NC_13,	/* GSBI2 I2C QUP SCL */
-		.settings = {
-			[GPIOMUX_SUSPENDED] = &gsbi2,
-		},
-	},
-	{
 		.gpio      = FIGHTER_GPIO_TP_I2C_SDA,	/* GSBI3 I2C QUP SDA */
 		.settings = {
-			[GPIOMUX_SUSPENDED] = &gsbi3,
+			[GPIOMUX_SUSPENDED] = &gpio_i2c_config_sus,
+			[GPIOMUX_ACTIVE] = &gpio_i2c_config,
 		},
 	},
 	{
 		.gpio      = FIGHTER_GPIO_TP_I2C_SCL,	/* GSBI3 I2C QUP SCL */
 		.settings = {
-			[GPIOMUX_SUSPENDED] = &gsbi3,
+			[GPIOMUX_SUSPENDED] = &gpio_i2c_config_sus,
+			[GPIOMUX_ACTIVE] = &gpio_i2c_config,
 		},
 	},
 	{
 		.gpio	   = FIGHTER_GPIO_AC_I2C_SDA,	/* GSBI8 I2C QUP SDA */
 		.settings = {
-			[GPIOMUX_SUSPENDED] = &gsbi8,
+			[GPIOMUX_SUSPENDED] = &gpio_i2c_config_sus,
+			[GPIOMUX_ACTIVE] = &gpio_i2c_config,
 		},
 	},
 	{
 		.gpio	   = FIGHTER_GPIO_AC_I2C_SCL,	/* GSBI8 I2C QUP SCL */
 		.settings = {
-			[GPIOMUX_SUSPENDED] = &gsbi8,
+			[GPIOMUX_SUSPENDED] = &gpio_i2c_config_sus,
+			[GPIOMUX_ACTIVE] = &gpio_i2c_config,
 		},
 	},
 	{
 		.gpio      = FIGHTER_GPIO_SENSOR_I2C_SDA,	/* GSBI12 I2C QUP SDA */
 		.settings = {
-			[GPIOMUX_SUSPENDED] = &gsbi12,
+			[GPIOMUX_SUSPENDED] = &gpio_i2c_config_sus,
+			[GPIOMUX_ACTIVE] = &gpio_i2c_config,
 		},
 	},
 	{
 		.gpio      = FIGHTER_GPIO_SENSOR_I2C_SCL,	/* GSBI12 I2C QUP SCL */
 		.settings = {
-			[GPIOMUX_SUSPENDED] = &gsbi12,
+			[GPIOMUX_SUSPENDED] = &gpio_i2c_config_sus,
+			[GPIOMUX_ACTIVE] = &gpio_i2c_config,
 		},
 	},
 };
@@ -135,13 +109,13 @@ static struct msm_gpiomux_config fighter_slimbus_configs[] __initdata = {
 
 static struct gpiomux_setting wcnss_5wire_suspend_cfg = {
 	.func = GPIOMUX_FUNC_GPIO,
-	.drv  = GPIOMUX_DRV_10MA,
+	.drv  = GPIOMUX_DRV_8MA,
 	.pull = GPIOMUX_PULL_NONE,
 };
 
 static struct gpiomux_setting wcnss_5wire_active_cfg = {
 	.func = GPIOMUX_FUNC_1,
-	.drv  = GPIOMUX_DRV_10MA,
+	.drv  = GPIOMUX_DRV_8MA,
 	.pull = GPIOMUX_PULL_DOWN,
 };
 
@@ -186,7 +160,7 @@ static struct msm_gpiomux_config wcnss_5wire_interface[] = {
 static struct gpiomux_setting mdp_vsync_active_cfg = {
 	.func = GPIOMUX_FUNC_1,
 	.drv = GPIOMUX_DRV_2MA,
-	.pull = GPIOMUX_PULL_DOWN,
+	.pull = GPIOMUX_PULL_NONE,
 };
 
 static struct gpiomux_setting mdp_vsync_suspend_cfg = {
@@ -211,13 +185,6 @@ static struct gpiomux_setting usb_id_cfg = {
 	.pull = GPIOMUX_PULL_NONE,
 };
 
-static struct gpiomux_setting usb_audio_sw_cfg = {
-	.func = GPIOMUX_FUNC_GPIO,
-	.drv = GPIOMUX_DRV_2MA,
-	.pull = GPIOMUX_PULL_NONE,
-	.dir = GPIOMUX_IN,
-};
-
 static struct msm_gpiomux_config cable_detect_usbid_config[] __initdata = {
 	{
 		.gpio = FIGHTER_GPIO_USB_ID1,
@@ -225,14 +192,7 @@ static struct msm_gpiomux_config cable_detect_usbid_config[] __initdata = {
 			[GPIOMUX_ACTIVE] = &usb_id_cfg,
 			[GPIOMUX_SUSPENDED] = &usb_id_cfg,
 		},
-	},
-	{
-		.gpio = FIGHTER_GPIO_USBz_AUDIO_SW,
-		.settings = {
-			[GPIOMUX_ACTIVE] = &usb_audio_sw_cfg,
-			[GPIOMUX_SUSPENDED] = &usb_audio_sw_cfg,
-		},
-	},
+	}
 };
 
 int __init fighter_gpiomux_init(void)
