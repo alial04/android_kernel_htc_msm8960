@@ -324,7 +324,9 @@ static struct memtype_reserve msm8960_reserve_table[] __initdata = {
 static void __init reserve_rtb_memory(void)
 {
 #if defined(CONFIG_MSM_RTB)
-	msm8960_reserve_table[MEMTYPE_EBI1].size += msm_rtb_pdata.size;
+	msm8960_reserve_table[MEMTYPE_EBI1].size += msm8960_rtb_pdata.size;
+	pr_info("mem_map: rtb reserved with size 0x%x in pool\n",
+			msm8960_rtb_pdata.size);
 #endif
 }
 
@@ -766,25 +768,16 @@ static void __init reserve_mdp_memory(void)
 	msm8960_mdp_writeback(msm8960_reserve_table);
 }
 
-static void reserve_cache_dump_memory(void)
+static void __init reserve_cache_dump_memory(void)
 {
 #ifdef CONFIG_MSM_CACHE_DUMP
-	unsigned int spare;
-	unsigned int l1_size;
 	unsigned int total;
-	int ret;
 
-	ret = scm_call(L1C_SERVICE_ID, L1C_BUFFER_GET_SIZE_COMMAND_ID, &spare,
-		sizeof(spare), &l1_size, sizeof(l1_size));
-
-	if (ret)
-		/* Fall back to something reasonable here */
-		l1_size = L1_BUFFER_SIZE;
-
-	total = l1_size + L2_BUFFER_SIZE;
-
+	total = msm8960_cache_dump_pdata.l1_size +
+		msm8960_cache_dump_pdata.l2_size;
 	msm8960_reserve_table[MEMTYPE_EBI1].size += total;
-	msm_cache_dump_pdata.l1_size = l1_size;
+	pr_info("mem_map: cache_dump reserved with size 0x%x in pool\n",
+			total);
 #endif
 }
 
@@ -2793,12 +2786,12 @@ static struct platform_device *common_devices[] __initdata = {
 #endif
 	&msm8960_device_watchdog,
 #ifdef CONFIG_MSM_RTB
-	&msm_rtb_device,
+	&msm8960_rtb_device,
 #endif
 	&msm8960_device_cache_erp,
 	&msm8960_iommu_domain_device,
 #ifdef CONFIG_MSM_CACHE_DUMP
-	&msm_cache_dump_device,
+	&msm8960_cache_dump_device,
 #endif
 #ifdef CONFIG_HTC_BATT_8960
 	&htc_battery_pdev,
