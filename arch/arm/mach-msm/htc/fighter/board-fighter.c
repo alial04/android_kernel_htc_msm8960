@@ -3729,18 +3729,6 @@ static void msm_region_id_gpio_init(void)
 	gpio_tlmm_config(msm_region_gpio[0], GPIO_CFG_ENABLE);
 }
 
-#ifdef CONFIG_RAWCHIP
-static struct spi_board_info rawchip_spi_board_info[] __initdata = {
-	{
-		.modalias               = "spi_rawchip",
-		.max_speed_hz           = 27000000,
-		.bus_num                = 1,
-		.chip_select            = 0,
-		.mode                   = SPI_MODE_0,
-	},
-};
-#endif
-
 static void __init fighter_init(void)
 {
 	u32 hw_ver_id = 0, rc = 0;
@@ -3768,11 +3756,6 @@ static void __init fighter_init(void)
 	fighter_gpiomux_init();
 	msm8960_device_qup_spi_gsbi10.dev.platform_data =
 				&msm8960_qup_spi_gsbi10_pdata;
-#ifdef CONFIG_RAWCHIP
-	spi_register_board_info(rawchip_spi_board_info,
-				ARRAY_SIZE(rawchip_spi_board_info));
-#endif
-
 	fighter_init_pmic();
 	msm8960_i2c_init();
 	msm8960_gfx_init();
