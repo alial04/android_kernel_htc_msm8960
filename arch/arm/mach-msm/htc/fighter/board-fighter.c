@@ -185,16 +185,6 @@ enum {
 };
 #endif
 
-#ifdef CONFIG_I2C
-
-#define MSM_8960_GSBI2_QUP_I2C_BUS_ID 2
-#define MSM_8960_GSBI4_QUP_I2C_BUS_ID 4
-#define MSM_8960_GSBI3_QUP_I2C_BUS_ID 3
-#define MSM_8960_GSBI8_QUP_I2C_BUS_ID 8
-#define MSM_8960_GSBI12_QUP_I2C_BUS_ID 12
-
-#endif
-
 #define MSM_PMEM_ADSP_SIZE         0x6D00000
 #define MSM_PMEM_AUDIO_SIZE        0x4CF000
 #define MSM_PMEM_SIZE 0x2800000 /* 40 Mbytes */

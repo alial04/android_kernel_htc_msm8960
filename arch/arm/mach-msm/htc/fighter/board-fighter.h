@@ -40,14 +40,6 @@
 		{ {-1,  0, 0}, { 0,  0, -1}, {0, 1,  0} }  \
 					}
 
-extern struct regulator_init_data msm_saw_regulator_pdata_s5;
-extern struct regulator_init_data msm_saw_regulator_pdata_s6;
-
-extern struct rpm_regulator_platform_data fighter_rpm_regulator_pdata __devinitdata;
-
-extern struct platform_device msm8960_device_ext_5v_vreg __devinitdata;
-extern struct platform_device msm8960_device_ext_l2_vreg __devinitdata;
-extern struct platform_device msm8960_device_ext_3p3v_vreg __devinitdata;
 extern struct pm8xxx_regulator_platform_data
 	msm_pm8921_regulator_pdata[] __devinitdata;
 
@@ -57,6 +49,15 @@ extern int msm_pm8921_regulator_pdata_len __devinitdata;
 #define GPIO_VREG_ID_EXT_L2		1
 #define GPIO_VREG_ID_EXT_3P3V		2
 #define GPIO_VREG_ID_EXT_OTG_SW		3
+
+extern struct regulator_init_data msm_saw_regulator_pdata_s5;
+extern struct regulator_init_data msm_saw_regulator_pdata_s6;
+
+extern struct rpm_regulator_platform_data fighter_rpm_regulator_pdata __devinitdata;
+
+extern struct platform_device msm8960_device_ext_5v_vreg __devinitdata;
+extern struct platform_device msm8960_device_ext_l2_vreg __devinitdata;
+extern struct platform_device msm8960_device_ext_3p3v_vreg __devinitdata;
 
 /* EVM */
 #define FIGHTER_GPIO_LCD_TE			(0) /* MDP_VSYNC_GPIO */
@@ -347,6 +348,14 @@ void __init msm8960_allocate_fb_region(void);
 void __init fighter_pm8921_gpio_mpp_init(void);
 void msm8960_mdp_writeback(struct memtype_reserve *reserve_table);
 int __init fighter_init_keypad(void);
+
+#ifdef CONFIG_I2C
+#define MSM_8960_GSBI4_QUP_I2C_BUS_ID 4
+#define MSM_8960_GSBI3_QUP_I2C_BUS_ID 3
+#define MSM_8960_GSBI2_QUP_I2C_BUS_ID 2
+#define MSM_8960_GSBI8_QUP_I2C_BUS_ID 8
+#define MSM_8960_GSBI12_QUP_I2C_BUS_ID 12
+#endif
 
 #ifdef CONFIG_MSM_RTB
 extern struct msm_rtb_platform_data msm8960_rtb_pdata;

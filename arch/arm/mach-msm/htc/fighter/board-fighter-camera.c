@@ -30,8 +30,6 @@
 #endif
 
 #ifdef CONFIG_MSM_CAMERA
-#define MSM_8960_GSBI4_QUP_I2C_BUS_ID 4
-
 static struct platform_device msm_camera_server = {
 	.name = "msm_cam_server",
 	.id = 0,
