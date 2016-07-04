@@ -2997,6 +2997,9 @@ static struct platform_device *common_devices[] __initdata = {
 #ifdef CONFIG_ION_MSM
 	&ion_dev,
 #endif
+#ifdef CONFIG_MSM_IOMMU
+	&msm8960_iommu_domain_device,
+#endif
 	&msm8960_rpm_device,
 	&msm8960_rpm_log_device,
 	&msm8960_rpm_stat_device,
@@ -3010,8 +3013,9 @@ static struct platform_device *common_devices[] __initdata = {
 #ifdef CONFIG_MSM_RTB
 	&msm8960_rtb_device,
 #endif
+#ifdef CONFIG_MSM_CACHE_ERP
 	&msm8960_device_cache_erp,
-	&msm8960_iommu_domain_device,
+#endif
 #ifdef CONFIG_MSM_CACHE_DUMP
 	&msm8960_cache_dump_device,
 #endif
