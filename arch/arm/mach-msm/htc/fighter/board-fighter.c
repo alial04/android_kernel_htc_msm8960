@@ -1190,7 +1190,7 @@ static struct htc_battery_platform_data htc_battery_pdev_data = {
 #ifdef CONFIG_DUTY_CYCLE_LIMIT
 	.chg_limit_timer_sub_mask = HTC_BATT_CHG_LIMIT_BIT_THRML,
 #endif
-	.critical_low_voltage_mv = 3200,
+	.critical_low_voltage_mv = 3100,
 	.critical_alarm_vol_ptr = critical_alarm_voltage_mv,
 	.critical_alarm_vol_cols = sizeof(critical_alarm_voltage_mv) / sizeof(int),
 	.overload_vol_thr_mv = 4000,
@@ -1211,6 +1211,9 @@ static struct htc_battery_platform_data htc_battery_pdev_data = {
 						cable_detect_register_notifier,
 	.icharger.dump_all = pm8921_dump_all,
 	.icharger.get_attr_text = pm8921_charger_get_attr_text,
+	.icharger.max_input_current = pm8921_set_hsml_target_ma,
+	.icharger.is_safty_timer_timeout = pm8921_is_chg_safety_timer_timeout,
+	.icharger.is_battery_full_eoc_stop = pm8921_is_batt_full_eoc_stop,
 	/* gauge */
 	.igauge.name = "pm8921",
 	.igauge.get_battery_voltage = pm8921_get_batt_voltage,
