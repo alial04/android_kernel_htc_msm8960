@@ -146,8 +146,8 @@ static struct TPS61310_flashlight_platform_data fighter_flashlight_data = {
 	.gpio_init = config_flashlight_gpios,
 	.tps61310_strb0 = FIGHTER_GPIO_DRIVER_EN,
 	.tps61310_strb1 = FIGHTER_GPIO_TORCH_FLASHz,
-	.led_count = 1,
 	.flash_duration_ms = 600,
+	.mode_pin_suspend_state_low = 1,
 };
 
 static struct i2c_board_info i2c_tps61310_flashlight[] = {
